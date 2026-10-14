@@ -1,0 +1,72 @@
+# Sentin8 .gitignore — shared across all services and apps.
+
+# ── Environment ──────────────────────────────────────────────────────────
+.env
+.env.local
+.env.*.local
+# Keep the template committed.
+!.env.example
+
+# ── Rust ─────────────────────────────────────────────────────────────────
+/target/
+**/*.rs.bk
+Cargo.lock
+.run/
+.tmp/
+
+# ── Flutter / Dart ───────────────────────────────────────────────────────
+**/.dart_tool/
+**/.flutter-plugins
+**/.flutter-plugins-dependencies
+**/.packages
+**/.pub-cache/
+**/.pub/
+**/build/
+**/.flutter-test-cache/
+**/coverage/
+
+# ── IDE / Editor ─────────────────────────────────────────────────────────
+.vscode/
+!.vscode/settings.json
+!.vscode/extensions.json
+.idea/
+*.iml
+*.swp
+*.swo
+*~
+
+# ── OS ───────────────────────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+
+# ── Logs ─────────────────────────────────────────────────────────────────
+*.log
+logs/
+
+# ── Docker / data ────────────────────────────────────────────────────────
+# Local Sentin8:Storage storage (services/storage/data/storage/).
+services/storage/data/
+# Local Sentin8:Sentin8:TLS certificates and CA.
+services/tls-server/data/
+
+# ── E2E state ────────────────────────────────────────────────────────────
+.e2e-state.json
+
+# ── Process management (start/stop) ─────────────────────────────────────
+# PIDs and logs written by `make start-rust` / `make start-flutter`.
+/.run/
+tmp/
+/.tmp/
+
+# Node
+node_modules
+.next
+npm-debug.log
+yarn-error.log
+
+# Compiled output
+.turbo
+dist
+tmp
+out-tsc
+bazel-out
