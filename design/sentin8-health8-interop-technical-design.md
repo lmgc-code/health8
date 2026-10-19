@@ -1,4 +1,4 @@
-# Sentin8 Health8:Interop — Interoperability Service Technical Design
+# Sentin8 Health8:Interop - Interoperability Service Technical Design
 
 Last updated: 2026-09-09
 Status: Target-state design (pre-implementation)
@@ -22,7 +22,7 @@ FHIR facade (which maps to the canonical CDR).
 ### 2.1 Listener
 
 Health8:Interop listens for HL7 v2 messages over **MLLP** (minimal lower-layer
-protocol) on a raw-TCP listener (Sentin8:TLS raw-TCP mode — platform addition
+protocol) on a raw-TCP listener (Sentin8:TLS raw-TCP mode - platform addition
 §9 of the master design). Message types: ADT (admit/discharge/transfer), ORM
 (order), ORU (result), ACK.
 
@@ -41,7 +41,7 @@ MLLP frame → parse (MSH/PID/OBR/OBX segments) → map to FHIR
   AE = error). NAK carries an ERR segment.
 - **Mapping**: ADT→Patient/Encounter, ORM→ServiceRequest, ORU→Observation/
   DiagnosticReport. The mapping is a pure function in the `health8-hl7` crate.
-- **Idempotency**: the MSH-10 (message control id) is the idempotency key —
+- **Idempotency**: the MSH-10 (message control id) is the idempotency key -
   duplicate messages are acknowledged without re-processing.
 
 ### 2.3 Outbound
@@ -80,7 +80,7 @@ POST /fhir/$export (or /fhir/Patient/$export, /fhir/Group/{id}/$export)
 ### 4.2 Parameters
 
 `_type`, `_since`, `_outputFormat` (ndjson), `_typeFilter`. The export is
-RLS-scoped — only resources the caller can read are exported.
+RLS-scoped - only resources the caller can read are exported.
 
 ### 4.3 Artifacts
 
@@ -119,7 +119,7 @@ Topic-based events (patient-open, patient-close, imagingstudy-open) are
 published over WebSocket (the platform's bidirectional transport tier) and
 SSE. FHIRcast is a domain concern of Interop.
 
-> **Note — no openEHR↔FHIR bridge.** With the canonical CDR (master design
+> **Note - no openEHR↔FHIR bridge.** With the canonical CDR (master design
 > §4.1a), there is no lossy cross-standard bridge: FHIR and openEHR are both
 > facades over the same canonical store, so a write via one is visible via the
 > other by construction. Interop's conversion work is limited to *external*

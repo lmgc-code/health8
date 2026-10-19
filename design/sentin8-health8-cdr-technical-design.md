@@ -1,4 +1,4 @@
-# Sentin8 Health8:CDR — Clinical Data Repository Technical Design
+# Sentin8 Health8:CDR - Clinical Data Repository Technical Design
 
 Last updated: 2026-09-09
 Status: Target-state design (pre-implementation)
@@ -6,8 +6,8 @@ Owners: Sentin8 Platform Engineering, Health8 Product Engineering
 
 > **References**: `sentin8-health8-technical-design.md` (master, §4.1a
 > three-layer architecture),
-> `sentin8-health8-fhir-technical-design.md` (FHIR facade — maps FHIR ↔ CDR),
-> `sentin8-health8-openehr-technical-design.md` (openEHR facade — maps
+> `sentin8-health8-fhir-technical-design.md` (FHIR facade - maps FHIR ↔ CDR),
+> `sentin8-health8-openehr-technical-design.md` (openEHR facade - maps
 > openEHR ↔ CDR),
 > `sentin8/design/sentin8-sentin8-db-technical-design.md` (RLS context),
 > `sentin8/design/sentin8-sentin8-storage-technical-design.md`,
@@ -16,7 +16,7 @@ Owners: Sentin8 Platform Engineering, Health8 Product Engineering
 
 ## 1. Executive Summary
 
-Health8:CDR is the **canonical clinical data repository** — the single source
+Health8:CDR is the **canonical clinical data repository** - the single source
 of truth for clinical data in a **model-agnostic** form. It is deliberately
 **not** a FHIR store and **not** an openEHR store: it stores clinical data in
 a canonical model (subjects, clinical entries, documents, versioning, and a
@@ -39,13 +39,13 @@ openEHR client ─► Health8:OpenEHR ─► │  canonical clinical │
   ↔ canonical entries (see `sentin8-health8-openehr-technical-design.md`).
 
 CDR owns the canonical tables and is the only service that writes them. The
-facades read/write through CDR's public API (RLS-scoped) — never by direct
+facades read/write through CDR's public API (RLS-scoped) - never by direct
 table access. This is the **canonical-model architecture**: one authoritative
 clinical store, with standards as interchangeable projections over it.
 
 ### 1.1 Why a canonical model
 
-FHIR and openEHR are **not isomorphic** — FHIR is single-model (flat resources
+FHIR and openEHR are **not isomorphic** - FHIR is single-model (flat resources
 + extensions + profiles), openEHR is dual-model (RM + archetypes/templates +
 `CONTRIBUTION`/`VERSION`). A direct mapping between them is lossy. A canonical
 model resolves this by defining **one** clinical vocabulary that is a
@@ -58,7 +58,7 @@ superset of both, so:
 - a third standard (e.g. HL7 v2, C-CDA, or a future FHIR R6) is added by
   writing one more facade, not by re-architecting the store.
 
-The canonical model is **not** a new public standard — it is an internal
+The canonical model is **not** a new public standard - it is an internal
 representation. The public surfaces are FHIR and openEHR (and the Interop
 formats). The canonical model exists to make those surfaces consistent.
 
@@ -80,7 +80,7 @@ all **model-agnostic** (no FHIR or openEHR concepts):
 ```sql
 CREATE SCHEMA IF NOT EXISTS health8;
 
--- Subjects — the holder of clinical data (patient, practitioner, …).
+-- Subjects - the holder of clinical data (patient, practitioner, …).
 CREATE TABLE health8.subjects (
     id              UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     env_id          UUID NOT NULL,
@@ -96,7 +96,7 @@ CREATE INDEX idx_subjects_env ON health8.subjects (env_id);
 
 ### 2.2 `health8.clinical_entries`
 
-The **clinical entry** is the canonical unit — an atomic clinical statement
+The **clinical entry** is the canonical unit - an atomic clinical statement
 (an observation, a diagnosis, a medication, a procedure, …). It captures the
 common semantics both FHIR resources and openEHR `ENTRY` subtypes express:
 *what* (code), *value*, *when* (effective time), *who* (subject), and
@@ -153,7 +153,7 @@ CREATE TABLE health8.document_entries (
 );
 ```
 
-### 2.4 Versioning — `health8.versioned_objects` / `health8.versions`
+### 2.4 Versioning - `health8.versioned_objects` / `health8.versions`
 
 A **unified version model** that is a superset of both standards' versioning:
 FHIR's `meta.versionId` history and openEHR's
@@ -181,7 +181,7 @@ CREATE TABLE health8.versions (
 );
 ```
 
-### 2.5 Search index — `health8.entry_index`
+### 2.5 Search index - `health8.entry_index`
 
 A typed search index over clinical entries, shared by both facades. FHIR
 search parameters and openEHR AQL both translate to queries against this
@@ -231,7 +231,7 @@ CREATE POLICY entries_tenant ON health8.clinical_entries FOR ALL USING (
 ```
 
 Holder-scoping for patient data is enforced by the **consent-grant**
-materialization (see consent design §4) — a practitioner's read of a patient's
+materialization (see consent design §4) - a practitioner's read of a patient's
 data is gated by Shield (ReBAC relation tuple) *and* the
 `health8.consent_grants` table, which CDR joins at query time for
 subject-compartment entries. The `subject_id` column on `clinical_entries` is
@@ -240,7 +240,7 @@ the holder key.
 ## 3. API Surface
 
 CDR exposes a **canonical** API (not FHIR, not openEHR) that the facades call.
-It is an internal surface — the public surfaces are FHIR and openEHR.
+It is an internal surface - the public surfaces are FHIR and openEHR.
 
 ### 3.1 Canonical API
 
@@ -277,7 +277,7 @@ still justified"), not a new trigger surface.
 
 | Crate | Purpose |
 |---|---|
-| `health8-canonical` | The canonical clinical model types (subject, entry, document, version) — shared by CDR and both facades. |
+| `health8-canonical` | The canonical clinical model types (subject, entry, document, version) - shared by CDR and both facades. |
 | `health8-cdr-contracts` | CDR canonical API DTOs + event payloads. |
 | `health8-cdr-client` | Typed client for CDR's canonical API (used by the facades). |
 

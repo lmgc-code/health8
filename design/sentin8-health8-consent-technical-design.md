@@ -1,4 +1,4 @@
-# Sentin8 Health8:Consent — Consent & Data Minimization Technical Design
+# Sentin8 Health8:Consent - Consent & Data Minimization Technical Design
 
 Last updated: 2026-09-09
 Status: Target-state design (pre-implementation)
@@ -15,7 +15,7 @@ Health8:Consent owns the **patient-directed consent** domain: FHIR `Consent`
 resources, the materialized consent-grant table that feeds both Shield (ReBAC)
 and holder-scoped RLS, data minimization, and the consent audit trail.
 
-Consent is a **first-class authorization input** — not a business-logic
+Consent is a **first-class authorization input** - not a business-logic
 afterthought. A practitioner can read a patient's data only if a consent-grant
 relation tuple exists (Shield ReBAC) *and* the holder-scoped RLS policy sees a
 matching grant row.
@@ -43,7 +43,7 @@ CREATE TABLE health8.consents (
 
 CREATE INDEX idx_consents_patient ON health8.consents (patient_id);
 
--- Materialized consent grants — the single source of truth for both Shield
+-- Materialized consent grants - the single source of truth for both Shield
 -- (ReBAC relation tuples) and holder-scoped RLS. Recomputed on every
 -- consent grant/revoke event.
 CREATE TABLE health8.consent_grants (
@@ -93,7 +93,7 @@ Consent revoked (inactive)
   → Shield relation tuple removed + RLS grant row deactivated
 ```
 
-The recompute is idempotent (keyed on the consent id) and transactional — a
+The recompute is idempotent (keyed on the consent id) and transactional - a
 grant and its audit row are written atomically.
 
 ## 4. Data Minimization
@@ -123,7 +123,7 @@ from `health8.consent_grants` (active rows only).
 
 ### 5.2 Holder-scoped RLS (backstop)
 
-CDR's patient-compartment reads join `health8.consent_grants` at query time —
+CDR's patient-compartment reads join `health8.consent_grants` at query time -
 even if Shield mis-evaluates, the row is invisible without a matching active
 grant. This is the defense-in-depth backstop (principles §4.3c).
 

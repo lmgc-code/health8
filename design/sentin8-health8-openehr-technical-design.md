@@ -1,4 +1,4 @@
-# Sentin8 Health8:OpenEHR — openEHR Facade Technical Design
+# Sentin8 Health8:OpenEHR - openEHR Facade Technical Design
 
 Last updated: 2026-09-09
 Status: Target-state design (pre-implementation)
@@ -16,7 +16,7 @@ Owners: Sentin8 Platform Engineering, Health8 Product Engineering
 Health8:OpenEHR is a **facade** over the canonical CDR. It exposes the
 dual-model openEHR surface (Reference Model + archetypes/templates +
 `CONTRIBUTION`/`VERSION` versioning + AQL) and maps compositions ↔ canonical
-clinical entries. It owns **no clinical tables** — clinical data lives in the
+clinical entries. It owns **no clinical tables** - clinical data lives in the
 canonical CDR; the facade owns only openEHR-specific metadata (archetypes,
 templates, and the openEHR UID ↔ canonical id mapping).
 
@@ -24,7 +24,7 @@ The facade is the **standards layer**: it implements the openEHR REST API and
 AQL, and delegates persistence to the canonical CDR via its canonical API
 (RLS-scoped).
 
-## 2. Data Model — openEHR metadata (not clinical data)
+## 2. Data Model - openEHR metadata (not clinical data)
 
 The facade owns only openEHR-specific **metadata**. Clinical data (subjects,
 entries, documents, versioning, index) lives in the canonical CDR (CDR §2).
@@ -33,7 +33,7 @@ The facade's tables are:
 ```sql
 CREATE SCHEMA IF NOT EXISTS health8;
 
--- Operational templates (OPT) — the env's clinical content contract.
+-- Operational templates (OPT) - the env's clinical content contract.
 CREATE TABLE health8.templates (
     id              UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     env_id          UUID NOT NULL,
@@ -44,7 +44,7 @@ CREATE TABLE health8.templates (
     UNIQUE (env_id, template_id)
 );
 
--- Archetypes (AOM/ADL) — the building blocks of templates.
+-- Archetypes (AOM/ADL) - the building blocks of templates.
 CREATE TABLE health8.archetypes (
     id              UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     env_id          UUID NOT NULL,
@@ -55,7 +55,7 @@ CREATE TABLE health8.archetypes (
     UNIQUE (env_id, archetype_id)
 );
 
--- openEHR UID ↔ canonical id mapping — lets the facade round-trip openEHR
+-- openEHR UID ↔ canonical id mapping - lets the facade round-trip openEHR
 -- UIDs (EHR id, composition UID, version UID) to canonical CDR ids losslessly.
 CREATE TABLE health8.openehr_id_map (
     id              UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -78,10 +78,10 @@ data itself.
 
 The openEHR RM is supported at parity:
 
-- `EHR` / `EHR_STATUS` — the top-level record and its status.
-- `COMPOSITION` — the clinical document container (with `SECTION` and
+- `EHR` / `EHR_STATUS` - the top-level record and its status.
+- `COMPOSITION` - the clinical document container (with `SECTION` and
   `ENTRY` children).
-- `ENTRY` subtypes — `OBSERVATION`, `EVALUATION`, `INSTRUCTION`, `ACTION`,
+- `ENTRY` subtypes - `OBSERVATION`, `EVALUATION`, `INSTRUCTION`, `ACTION`,
   `ADMIN_ENTRY`.
 - `CLUSTER`, `ELEMENT`, `ITEM_TREE`, `ITEM_LIST`, `ITEM_SINGLE`, `ITEM_TABLE`.
 - `PARTY` (party self/identified/related), `PARTICIPATION`, `EVENT_CONTEXT`.

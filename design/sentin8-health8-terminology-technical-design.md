@@ -1,4 +1,4 @@
-# Sentin8 Health8:Terminology — Terminology Service Technical Design
+# Sentin8 Health8:Terminology - Terminology Service Technical Design
 
 Last updated: 2026-09-09
 Status: Target-state design (pre-implementation)
@@ -114,7 +114,7 @@ a Sentin8:Storage object (the code-system distribution file).
 CDR validates coded elements (`code`, `Coding`, `CodeableConcept`) against
 Terminology at write time when the env's `validate_codes` flag is enabled. The
 validation is a synchronous read-your-writes call to Terminology's public
-`$validate-code` API (RLS-scoped) — a narrow, justified internal call (the
+`$validate-code` API (RLS-scoped) - a narrow, justified internal call (the
 caller needs the result in the same request).
 
 ## 6. Events

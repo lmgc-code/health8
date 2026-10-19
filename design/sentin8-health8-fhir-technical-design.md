@@ -1,4 +1,4 @@
-# Sentin8 Health8:FHIR — FHIR Facade Technical Design
+# Sentin8 Health8:FHIR - FHIR Facade Technical Design
 
 Last updated: 2026-09-09
 Status: Target-state design (pre-implementation)
@@ -13,7 +13,7 @@ Owners: Sentin8 Platform Engineering, Health8 Product Engineering
 
 Health8:FHIR is a **facade** over the canonical CDR. It exposes the
 multi-version FHIR REST API (STU3/R4/R4B/R5) and maps FHIR resources ↔
-canonical clinical entries. It owns **no clinical tables** — clinical data
+canonical clinical entries. It owns **no clinical tables** - clinical data
 lives in the canonical CDR; the facade owns only FHIR-specific metadata
 (search-parameter definitions, the FHIR↔canonical id mapping).
 
@@ -26,21 +26,21 @@ the canonical CDR via its canonical API (RLS-scoped).
 The FHIR facade owns:
 
 - **Version negotiation** (master design §4.2).
-- **Resource model** — the multi-version type vocabulary and JSON
+- **Resource model** - the multi-version type vocabulary and JSON
   serialization.
-- **Interactions** — read/vread/update/patch/delete/create/search/history/
+- **Interactions** - read/vread/update/patch/delete/create/search/history/
   batch/transaction/capabilities + `$` operations.
-- **Search** — search-parameter resolution, modifiers, chained parameters,
+- **Search** - search-parameter resolution, modifiers, chained parameters,
   `_include`/`_revinclude`, `_filter` (FHIRPath).
-- **Versioning & concurrency** — `meta.versionId`, `meta.lastUpdated`,
+- **Versioning & concurrency** - `meta.versionId`, `meta.lastUpdated`,
   `If-Match` optimistic concurrency, history.
-- **Validation** — StructureDefinition-based validation per version.
-- **Conformance** — per-version `CapabilityStatement`.
-- **Mapping** — FHIR resource ↔ canonical entry (the facade's core function).
-- **Version conversion** — best-effort cross-version read conversion.
+- **Validation** - StructureDefinition-based validation per version.
+- **Conformance** - per-version `CapabilityStatement`.
+- **Mapping** - FHIR resource ↔ canonical entry (the facade's core function).
+- **Version conversion** - best-effort cross-version read conversion.
 
 The engine does **not** own persistence (CDR), tenancy/RLS (platform), or
-authorization (Sentin8:Policy) — those are the host service's and platform's
+authorization (Sentin8:Policy) - those are the host service's and platform's
 concerns.
 
 ## 3. Version Negotiation
@@ -48,11 +48,11 @@ concerns.
 The engine supports **STU3 (3.0.2), R4 (4.0.1), R4B (4.3.0), and R5 (5.0.0)**
 and negotiates the FHIR version per request, resolved in this order:
 
-1. **`fhirVersion` query parameter** — `GET /fhir/Patient?fhirVersion=4.0.1`.
-2. **`Accept` header** — `Accept: application/fhir+json; fhirVersion=4.0.1`.
-3. **`Content-Type` header** — for writes, the `fhirVersion` parameter on the
+1. **`fhirVersion` query parameter** - `GET /fhir/Patient?fhirVersion=4.0.1`.
+2. **`Accept` header** - `Accept: application/fhir+json; fhirVersion=4.0.1`.
+3. **`Content-Type` header** - for writes, the `fhirVersion` parameter on the
    request body's content type.
-4. **Environment default** — `health8_default_fhir_version` (default `4.0.1`).
+4. **Environment default** - `health8_default_fhir_version` (default `4.0.1`).
 
 The negotiated version drives validation, search-parameter resolution,
 serialization, and the `CapabilityStatement`.
@@ -66,7 +66,7 @@ The `health8-fhir` crate is the single source of truth for the resource model:
 - A **generic `Resource` envelope** (resource type + `id` + `meta` + flattened
   JSON) so no resource is ever rejected, including version-specific and
   extension-heavy resources.
-- **Per-version allow-lists** — R5-only types (`ActorDefinition`,
+- **Per-version allow-lists** - R5-only types (`ActorDefinition`,
   `Requirements`, `SubscriptionTopic`) are accepted only under R5; STU3-only
   types only under STU3. The `ResourceType` vocabulary is the union across all
   four versions.
@@ -98,7 +98,7 @@ The `health8-fhir` crate is the single source of truth for the resource model:
 ### 6.1 Search-parameter resolution
 
 The engine loads the **per-version** FHIR search-parameter definitions at
-startup (embedded via `include_str!` from `health8-fhir` — STU3/R4/R4B/R5) and
+startup (embedded via `include_str!` from `health8-fhir` - STU3/R4/R4B/R5) and
 builds a `fhir_version → resource_type → param_name → index strategy` map.
 Search requests are parsed into a typed query AST, translated to SQL against
 the repository's search index (scoped by the negotiated `fhir_version`), and
@@ -125,7 +125,7 @@ FHIRPath consumer.
 - **`meta.versionId`** is a monotonically increasing string (ULID or
   timestamp-based) per logical id.
 - **`meta.lastUpdated`** is set server-side on every write.
-- **History** is immutable — history rows are never updated or deleted (except
+- **History** is immutable - history rows are never updated or deleted (except
   by a future `$expunge` operation, out of v1 scope).
 
 ## 8. Validation
@@ -157,11 +157,11 @@ are best-effort and version-aware.
 version, generated from the same registration data the service self-describes
 (interactions, search parameters, operations, and supported versions).
 
-## 11. Mapping — FHIR resource ↔ canonical entry
+## 11. Mapping - FHIR resource ↔ canonical entry
 
 The facade's core function is the **mapping** between FHIR resources and the
 canonical CDR's clinical entries. The facade calls the canonical CDR API
-(CDR §3.1) — it does not touch the CDR's tables directly.
+(CDR §3.1) - it does not touch the CDR's tables directly.
 
 ```rust
 // The facade maps a FHIR resource to/from a canonical entry.

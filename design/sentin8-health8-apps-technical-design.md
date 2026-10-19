@@ -1,4 +1,4 @@
-# Sentin8 Health8 — Apps Technical Design
+# Sentin8 Health8 - Apps Technical Design
 
 Last updated: 2026-09-09
 Status: Target-state design (pre-implementation)
@@ -15,11 +15,11 @@ Health8 ships three Flutter apps and RFW admin pages:
 
 | App | Slug | Audience |
 |---|---|---|
-| Health8:eHealth | `ehealth` | Patient portal — view records, manage consents, appointments |
-| Health8:eClinician | `eclinician` | Clinician — patient search, orders, results, tasks |
-| Health8:eAdmin | `eadmin` | Staff — terminology, subscriptions, bulk export, audit |
+| Health8:eHealth | `ehealth` | Patient portal - view records, manage consents, appointments |
+| Health8:eClinician | `eclinician` | Clinician - patient search, orders, results, tasks |
+| Health8:eAdmin | `eadmin` | Staff - terminology, subscriptions, bulk export, audit |
 
-All apps route through `Bff8ApiClient → Sentin8:BFF /proxy/health8/...` — no
+All apps route through `Bff8ApiClient → Sentin8:BFF /proxy/health8/...` - no
 direct service calls (Flutter SDK convention). Admin pages are RFW definitions
 served by each service at `GET /v1/admin/ui/{page}` and rendered by
 Sentin8:Dash.
@@ -29,13 +29,13 @@ Sentin8:Dash.
 ```
 apps/ehealth/
   lib/
-    main.dart              — bootstrap + shell (sentin8_flutter)
-    bff/                   — Bff8ApiClient wiring, scope map
+    main.dart              - bootstrap + shell (sentin8_flutter)
+    bff/                   - Bff8ApiClient wiring, scope map
     pages/
-      records.dart         — patient record viewer (FHIR resources)
-      consents.dart        — consent management
-      appointments.dart    — appointment booking
-    theme/                 — Health8 brand (Royal Gold accent, Inter)
+      records.dart         - patient record viewer (FHIR resources)
+      consents.dart        - consent management
+      appointments.dart    - appointment booking
+    theme/                 - Health8 brand (Royal Gold accent, Inter)
 ```
 
 ## 3. Scopes
@@ -78,5 +78,5 @@ Material Icons code points). Sentin8:Dash discovers them at runtime.
 
 Each app has an `app.json` with listing metadata (name, slug, description,
 backend URL, OAuth defaults, scopes). Registered at runtime via
-`sentin8-cli vertical enroll` (no hardcoded app-slug→backend mappings —
+`sentin8-cli vertical enroll` (no hardcoded app-slug→backend mappings -
 principles §4.8).

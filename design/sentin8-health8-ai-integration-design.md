@@ -1,4 +1,4 @@
-# Sentin8 Health8 — AI Integration Design
+# Sentin8 Health8 - AI Integration Design
 
 Last updated: 2026-09-09
 Status: Target-state design (pre-implementation)

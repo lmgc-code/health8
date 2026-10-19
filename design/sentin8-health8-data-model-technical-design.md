@@ -1,4 +1,4 @@
-# Sentin8 Health8 — Data Model & Persistence Technical Design
+# Sentin8 Health8 - Data Model & Persistence Technical Design
 
 Last updated: 2026-09-09
 Status: Target-state design (pre-implementation)
@@ -72,8 +72,8 @@ CREATE POLICY holder_isolation ON health8.<table> FOR ALL USING (
 | `health8.versioned_objects` | CDR | env | Canonical versioned object |
 | `health8.versions` | CDR | env | Canonical version snapshot (unified version model) |
 | `health8.entry_index` | CDR | env | Canonical search index (shared by facades) |
-| `health8.templates` | OpenEHR | env | openEHR operational templates (OPT) — facade metadata |
-| `health8.archetypes` | OpenEHR | env | openEHR archetypes (AOM/ADL) — facade metadata |
+| `health8.templates` | OpenEHR | env | openEHR operational templates (OPT) - facade metadata |
+| `health8.archetypes` | OpenEHR | env | openEHR archetypes (AOM/ADL) - facade metadata |
 | `health8.openehr_id_map` | OpenEHR | env | openEHR UID ↔ canonical id mapping |
 | `health8.codesystems` | Terminology | env | CodeSystem resources |
 | `health8.concepts` | Terminology | env | CodeSystem concepts (for `$` ops) |
@@ -106,7 +106,7 @@ Only `sentin8_bus_relay` (scoped to `sentin8_bus_inbox`) may bypass RLS
 ## 5. Connection Pooling
 
 All services use `sentin8_config::pg_pool::connect(url)` (caps
-`max_connections` at 3, overridable via `SENTIN8_PG_POOL_MAX`) — never
+`max_connections` at 3, overridable via `SENTIN8_PG_POOL_MAX`) - never
 `sqlx::PgPool::connect` directly (principles §4.3).
 
 ## 6. Table Creation

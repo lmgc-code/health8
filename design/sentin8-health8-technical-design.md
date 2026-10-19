@@ -1,4 +1,4 @@
-# Sentin8 Health8 — Vertical Technical Design (Master)
+# Sentin8 Health8 - Vertical Technical Design (Master)
 
 Last updated: 2026-09-09
 Status: Target-state design (pre-implementation)
@@ -21,9 +21,9 @@ Health8 is Sentin8's **healthcare vertical**: a multi-tenant, FHIR®-native,
 interoperable clinical data platform re-implemented as **Rust services on the
 Sentin8 platform**, with Flutter clinical apps and Dash RFW admin pages.
 
-Health8 provides a **canonical clinical data repository (CDR)** — a
+Health8 provides a **canonical clinical data repository (CDR)** - a
 model-agnostic store of clinical data (subjects, entries, documents,
-versioning, index) — exposed through **two standards facades**: a
+versioning, index) - exposed through **two standards facades**: a
 standards-complete, **multi-version FHIR** facade supporting **STU3 (3.0.2),
 R4 (4.0.1), R4B (4.3.0), and R5 (5.0.0)** with full CRUD, search, history,
 versioning, batch/transaction, and compartment semantics; and a **dual-model
@@ -40,10 +40,10 @@ The reference healthcare platform this design is derived from is a
 **distributed monolith**: one Node.js process serving FHIR CRUD/search,
 terminology, bulk export, SMART OAuth, subscriptions, HL7 v2, C-CDA, DICOM,
 clinical decision support, server-side "bots", an on-premise agent, and SCIM
-provisioning — with its own OAuth2/OIDC authorization server, its own
+provisioning - with its own OAuth2/OIDC authorization server, its own
 PostgreSQL schema with hand-rolled search-parameter indexing, its own
 background-job queue, its own storage abstraction, and its own web app. All of
-that platform machinery is **replaced, not ported** — Health8 keeps only the
+that platform machinery is **replaced, not ported** - Health8 keeps only the
 *clinical/healthcare domain* and wires it into Sentin8:Auth, Sentin8:DB,
 Sentin8:Storage, Sentin8:Bus, Sentin8:Cron, Sentin8:Func, Sentin8:Flow,
 Sentin8:Proxy/TLS, Sentin8:Captain, Sentin8:Dash, Sentin8:BFF and
@@ -54,19 +54,19 @@ Sentin8:Stat.
 | Reference platform capability | Health8 vertical on Sentin8 |
 |---|---|
 | Built-in OAuth2/OIDC authorization server (authorize/token/introspect/userinfo, DCR, JWKS) | **Deleted.** Sentin8:Auth is the single identity plane (principles §4.1). SMART on FHIR scopes (`patient/*.read`, `user/*.write`, `system/*.read`) map to Sentin8 granular scopes (`health8:fhir:patient:read`, …) at the BFF/authorization layer. |
-| SMART App Launch (launch context, `launch/patient`, `fhirUser`, `aud`/`iss` claims) | **Kept as a domain concern** — the SMART conformance document (`/.well-known/smart-configuration`) and launch-context resolution are served by Health8:Interop, but the OAuth mechanics (authorization code, PKCE, token minting, `aud`/`iss`/`fhirUser` claims) are Sentin8:Auth's job. |
+| SMART App Launch (launch context, `launch/patient`, `fhirUser`, `aud`/`iss` claims) | **Kept as a domain concern** - the SMART conformance document (`/.well-known/smart-configuration`) and launch-context resolution are served by Health8:Interop, but the OAuth mechanics (authorization code, PKCE, token minting, `aud`/`iss`/`fhirUser` claims) are Sentin8:Auth's job. |
 | Hand-rolled PostgreSQL schema with per-resource-type tables + search-parameter lookup tables + token columns | **Replaced.** A canonical model (`health8.subjects`, `health8.clinical_entries`, `health8.documents`, `health8.versioned_objects`, `health8.versions`, `health8.entry_index`) with RLS (`env_id` + `subject_id` holder-scoping). FHIR and openEHR are facades over this canonical store. |
 | Background-job queue (Redis) for bulk export / async operations | **Replaced.** Sentin8:Bus (Valkey Streams) for fire-and-forget triggers + Sentin8:Cron for scheduled work + Sentin8:Flow for multi-step workflows. |
 | Server-side "bots" (AWS Lambda / in-process) | **Replaced.** Sentin8:Func (WASM modules) with the proxy-back pattern for domain data access. |
 | On-premise agent (HL7 v2 MLLP listener, DICOM, channel management) | **Replaced.** Health8:Interop owns HL7 v2 MLLP over Sentin8:TLS raw-TCP; DICOM is deferred (see §3). |
-| SCIM 2.0 provisioning server | **Deferred/optional** — provisioning becomes Sentin8:Auth events consumed by Health8 (`sentin8:auth:user:created` → patient/practitioner bootstrap). |
+| SCIM 2.0 provisioning server | **Deferred/optional** - provisioning becomes Sentin8:Auth events consumed by Health8 (`sentin8:auth:user:created` → patient/practitioner bootstrap). |
 | Web app (React SPA) | **Replaced.** Flutter apps (eHealth patient portal, eClinician, eAdmin) via Sentin8:BFF + RFW admin pages rendered by Sentin8:Dash. |
 | Metrics/tracing stack | **Replaced.** Sentin8:Stat + `tracing` structured logs. |
 | Storage abstraction (S3/Azure/file) | **Replaced.** Sentin8:Storage for Binary resources, DICOM objects, and bulk-export artifacts. |
 
 ### 1.2 What deliberately does NOT change
 
-The **clinical domain itself** is preserved at parity — every FHIR resource,
+The **clinical domain itself** is preserved at parity - every FHIR resource,
 search parameter, operation, and interoperability format that makes a
 healthcare platform correct:
 
@@ -89,7 +89,7 @@ healthcare platform correct:
   `$translate`, `$subsumes`, `$import`, `$closure`, `$find-matches`.
 - **Interoperability formats**: HL7 v2 (ADT/ORU/ORM/ORU-R01, MLLP framing,
   ACK/NAK), C-CDA (R1.1/R2.1) export/import, Bulk Data (FHIR Bulk Data Access
-  IG STU2 — group/patient/system export, NDJSON, `_since`, `_type`).
+  IG STU2 - group/patient/system export, NDJSON, `_since`, `_type`).
 - **SMART on FHIR**: App Launch (EHR launch + standalone launch), scopes
   (`patient/*.read`, `user/*.write`, `system/*.read`), launch context
   (`launch/patient`, `launch/encounter`), `fhirUser`, `aud`/`iss` claims.
@@ -100,7 +100,7 @@ healthcare platform correct:
   `EVALUATION`, `INSTRUCTION`, `ACTION`, `ADMIN_ENTRY`, `CLUSTER`, `ELEMENT`,
   `SECTION`, `ENTRY`), archetypes/templates (AOM 1.4/2.x), the
   `CONTRIBUTION`/`VERSION`/`VERSIONED_OBJECT` versioning model, `EHR`/`EHR_STATUS`
-  records, and **AQL** (Archetype Query Language) — see §4.3.
+  records, and **AQL** (Archetype Query Language) - see §4.3.
 
 ## 2. Goals
 
@@ -111,30 +111,30 @@ healthcare platform correct:
   tenant: own patients, practitioners, terminology, consents, audit. RLS on
   every table (`env_id` + `patient_id` holder-scoping); explicit `WHERE env_id`
   clauses as defense-in-depth.
-- **Multi-version FHIR conformance** — a `CapabilityStatement` per supported
+- **Multi-version FHIR conformance** - a `CapabilityStatement` per supported
   FHIR version (STU3/R4/R4B/R5) that accurately describes the implemented
   surface, generated from the same registration data the service
   self-describes.
-- **openEHR conformance** — an openEHR REST API (EHRbase-compatible surface)
+- **openEHR conformance** - an openEHR REST API (EHRbase-compatible surface)
   and AQL query endpoint, with archetype/template validation against the
   operational template set.
-- **Consent-first data access** — every patient-data read is gated by a
+- **Consent-first data access** - every patient-data read is gated by a
   patient-directed consent (FHIR `Consent`) evaluated at the authorization
   layer (Sentin8:Policy Shield) *and* enforced by holder-scoped RLS.
-- **Event-driven execution** — cross-service work (order → result, encounter
+- **Event-driven execution** - cross-service work (order → result, encounter
   → billing, immunization → registry) is expressed as `health8:*` domain events
   with self-contained payloads, idempotency keys, and DLQ replay.
 
 ## 3. Non-Goals
 
-- Health8 does not issue tokens, API keys, or sessions — Sentin8:Auth is the
+- Health8 does not issue tokens, API keys, or sessions - Sentin8:Auth is the
   only issuer.
-- Health8 does not run its own scheduler — all scheduling is delegated to
+- Health8 does not run its own scheduler - all scheduling is delegated to
   Sentin8:Cron.
-- Health8 does not compile or run WASM directly — clinical decision support and
+- Health8 does not compile or run WASM directly - clinical decision support and
   custom hooks are delegated to Sentin8:Func.
-- Health8 does not implement DICOM imaging in v1 (deferred — see §3.1).
-- Health8 does not implement clinical decision support (CDS) rules natively —
+- Health8 does not implement DICOM imaging in v1 (deferred - see §3.1).
+- Health8 does not implement clinical decision support (CDS) rules natively -
   CDS is Sentin8:Func modules triggered by `health8:*` events.
 - Health8 does not provide arbitrary SQL or tenant-authored RLS policies.
 - Health8 does not implement billing/claims (that is a future vertical or a
@@ -155,9 +155,9 @@ healthcare platform correct:
 
 | Service | `service_type` | Binary | Role |
 |---|---|---|---|
-| Health8:CDR | `health8:cdr` | `health8-cdr` | Canonical clinical data repository — model-agnostic store (subjects, entries, documents, versioning, index). |
-| Health8:FHIR | `health8:fhir` | `health8-fhir` | FHIR facade — multi-version FHIR (STU3/R4/R4B/R5) REST API, mapping FHIR resources ↔ CDR canonical entries. |
-| Health8:OpenEHR | `health8:openehr` | `health8-openehr` | openEHR facade — dual-model openEHR REST API + AQL, mapping compositions ↔ CDR canonical entries. |
+| Health8:CDR | `health8:cdr` | `health8-cdr` | Canonical clinical data repository - model-agnostic store (subjects, entries, documents, versioning, index). |
+| Health8:FHIR | `health8:fhir` | `health8-fhir` | FHIR facade - multi-version FHIR (STU3/R4/R4B/R5) REST API, mapping FHIR resources ↔ CDR canonical entries. |
+| Health8:OpenEHR | `health8:openehr` | `health8-openehr` | openEHR facade - dual-model openEHR REST API + AQL, mapping compositions ↔ CDR canonical entries. |
 | Health8:Terminology | `health8:terminology` | `health8-terminology` | CodeSystem/ValueSet/ConceptMap storage + `$lookup`/`$validate-code`/`$expand`/`$translate`/`$subsumes`/`$import`. |
 | Health8:Interop | `health8:interop` | `health8-interop` | HL7 v2 MLLP, C-CDA exchange, Bulk Data export, SMART conformance, subscriptions/FHIRcast. |
 | Health8:Workflow | `health8:workflow` | `health8-workflow` | Task, CarePlan, ServiceRequest, Appointment/Schedule/Slot, order orchestration. |
@@ -178,16 +178,16 @@ healthcare platform correct:
    └──────────────┴──────────────┴──────────────┴──────────────┴──────────────┴──────────────┴──────────────┘
 ```
 
-- **Health8:CDR** is the **canonical clinical data repository** — the single
+- **Health8:CDR** is the **canonical clinical data repository** - the single
   writer of the canonical tables (`health8.subjects`,
   `health8.clinical_entries`, `health8.documents`, `health8.versioned_objects`,
   `health8.versions`, `health8.entry_index`). It is model-agnostic: no FHIR or
   openEHR concepts. The facades read/write through CDR's canonical API
-  (RLS-scoped) — never by direct table access.
-- **Health8:FHIR** is a **facade** — it exposes the multi-version FHIR REST
+  (RLS-scoped) - never by direct table access.
+- **Health8:FHIR** is a **facade** - it exposes the multi-version FHIR REST
   API and maps FHIR resources ↔ canonical entries. It owns no clinical tables
   (only its own FHIR-specific metadata, e.g. search-parameter definitions).
-- **Health8:OpenEHR** is a **facade** — it exposes the openEHR REST API + AQL
+- **Health8:OpenEHR** is a **facade** - it exposes the openEHR REST API + AQL
   and maps compositions ↔ canonical entries. It owns no clinical tables (only
   its own openEHR-specific metadata, e.g. archetypes/templates).
 - **Health8:Terminology** owns `health8.codesystems`, `health8.valuesets`,
@@ -201,17 +201,17 @@ healthcare platform correct:
 - **Health8:Consent** owns `health8.consents` and the consent-decision
   evaluation that feeds both Sentin8:Policy (Shield) and holder-scoped RLS.
 
-### 4.1a Three-layer architecture — canonical CDR + standards facades
+### 4.1a Three-layer architecture - canonical CDR + standards facades
 
 The core architectural decision is a **three-layer** split:
 
-1. **Canonical CDR** — one model-agnostic clinical store (the single source
+1. **Canonical CDR** - one model-agnostic clinical store (the single source
    of truth).
-2. **FHIR facade** — maps FHIR ↔ canonical.
-3. **openEHR facade** — maps openEHR ↔ canonical.
+2. **FHIR facade** - maps FHIR ↔ canonical.
+3. **openEHR facade** - maps openEHR ↔ canonical.
 
 **Why a canonical model, not two native stores.** FHIR and openEHR are **not
-isomorphic** — FHIR is single-model (flat resources + extensions + profiles),
+isomorphic** - FHIR is single-model (flat resources + extensions + profiles),
 openEHR is dual-model (RM + archetypes/templates + `CONTRIBUTION`/`VERSION`).
 A direct mapping between them is lossy. Two independent native stores would
 mean either (a) duplicated clinical data with no single source of truth, or
@@ -235,13 +235,13 @@ surface:
 
 Separating them gives independent scaling, failure isolation, cleaner
 authorization (`health8:fhir:*` vs `health8:openehr:*` scopes), and
-independent evolution. The shared concerns — tenancy, RLS, consent, auth,
-events — are **platform-provided** (the shell, policy engine, and RLS helpers
+independent evolution. The shared concerns - tenancy, RLS, consent, auth,
+events - are **platform-provided** (the shell, policy engine, and RLS helpers
 give a new service those for free), so there is no co-location pressure.
 
 **The canonical model is internal, not a new public standard.** The public
 surfaces are FHIR and openEHR (and the Interop formats). The canonical model
-exists to make those surfaces consistent — and to make adding a third
+exists to make those surfaces consistent - and to make adding a third
 standard (HL7 v2, C-CDA, a future FHIR R6) a matter of writing one more
 facade, not re-architecting the store.
 
@@ -251,25 +251,25 @@ Health8:FHIR is a **multi-version FHIR facade**. It supports **STU3 (3.0.2),
 R4 (4.0.1), R4B (4.3.0), and R5 (5.0.0)** and negotiates the FHIR version per
 request. The version is resolved in this order:
 
-1. **`fhirVersion` query parameter** — `GET /fhir/Patient?fhirVersion=4.0.1`
+1. **`fhirVersion` query parameter** - `GET /fhir/Patient?fhirVersion=4.0.1`
    (the FHIR R4+ standard mechanism).
-2. **`Accept` header** — `Accept: application/fhir+json; fhirVersion=4.0.1`.
-3. **`Content-Type` header** — for writes, the `fhirVersion` parameter on the
+2. **`Accept` header** - `Accept: application/fhir+json; fhirVersion=4.0.1`.
+3. **`Content-Type` header** - for writes, the `fhirVersion` parameter on the
    request body's content type.
-4. **Environment default** — the env's configured default FHIR version
+4. **Environment default** - the env's configured default FHIR version
    (`health8_default_fhir_version`, default `4.0.1`).
 
 The negotiated version drives:
 
-- **Resource validation** — the resource is validated against the
+- **Resource validation** - the resource is validated against the
   StructureDefinition set for that version (the `health8-fhir` crate embeds
   the STU3/R4/R4B/R5 definitions).
-- **Search parameters** — the search-parameter vocabulary differs across
+- **Search parameters** - the search-parameter vocabulary differs across
   versions (e.g. R5 adds `_filter`-only parameters, R4B renames some); the
   engine resolves parameters against the negotiated version's definitions.
-- **Serialization** — responses are serialized in the negotiated version's
+- **Serialization** - responses are serialized in the negotiated version's
   dialect (element names, `resourceType` casing, extension URLs).
-- **CapabilityStatement** — `GET /fhir/metadata` returns the
+- **CapabilityStatement** - `GET /fhir/metadata` returns the
   `CapabilityStatement` for the negotiated version.
 
 **Storage is version-agnostic.** Resources are mapped to the canonical CDR's
@@ -291,7 +291,7 @@ versions, with a per-version allow-list.
 
 Health8:OpenEHR is a **facade** over the canonical CDR. It exposes the
 dual-model openEHR surface and maps compositions ↔ canonical entries. openEHR
-is not mapped into a FHIR resource table — the canonical model is the shared
+is not mapped into a FHIR resource table - the canonical model is the shared
 store, and each facade maps its own standard to/from it (see §4.1a).
 
 **Why a facade, not a native store.** FHIR is single-model (flat resource
@@ -306,10 +306,10 @@ openEHR-specific metadata the facade owns), not discarded.
 
 **Reference Model (RM).** The openEHR RM is supported at parity:
 
-- `EHR` / `EHR_STATUS` — the top-level record and its status.
-- `COMPOSITION` — the clinical document container (with `SECTION` and
+- `EHR` / `EHR_STATUS` - the top-level record and its status.
+- `COMPOSITION` - the clinical document container (with `SECTION` and
   `ENTRY` children).
-- `ENTRY` subtypes — `OBSERVATION`, `EVALUATION`, `INSTRUCTION`, `ACTION`,
+- `ENTRY` subtypes - `OBSERVATION`, `EVALUATION`, `INSTRUCTION`, `ACTION`,
   `ADMIN_ENTRY`.
 - `CLUSTER`, `ELEMENT`, `ITEM_TREE`, `ITEM_LIST`, `ITEM_SINGLE`, `ITEM_TABLE`.
 - `PARTY` (party self/identified/related), `PARTICIPATION`, `EVENT_CONTEXT`.
@@ -355,7 +355,7 @@ lives in the canonical CDR. The facade's metadata tables are env-scoped with
 
 The canonical model makes the "which standard is authoritative" question moot:
 **the canonical CDR is always the system of record**, and FHIR and openEHR are
-always projections over it. There is no lossy cross-standard bridge — each
+always projections over it. There is no lossy cross-standard bridge - each
 facade maps its own standard to/from the canonical model, and both are usable
 simultaneously at full native fidelity.
 
@@ -375,7 +375,7 @@ over the same data.
 
 ### 4.4a Using both standards simultaneously
 
-**Yes — FHIR and openEHR can be used at the same time, by construction.** Both
+**Yes - FHIR and openEHR can be used at the same time, by construction.** Both
 facades map to the same canonical CDR, so:
 
 - a FHIR app (e.g. a SMART app) and an openEHR app (e.g. an AQL-driven
@@ -383,7 +383,7 @@ facades map to the same canonical CDR, so:
   data;
 - a write via FHIR is visible via AQL (and vice versa), because both read the
   canonical store;
-- both facades run **at full native fidelity** — neither is a degraded
+- both facades run **at full native fidelity** - neither is a degraded
   projection of the other, because the canonical model is a superset of both.
 
 The canonical CDR is the single source of truth; FHIR and openEHR are two
@@ -406,7 +406,7 @@ layer (no blanket org-wide bypass).
   `health8.conceptmaps`, `health8.consents`, `health8.tasks`,
   `health8.subscriptions`): standard `env_id` policy.
 - **Holder-scoped tables** (patient data): the `health8.clinical_entries`
-  table uses a **holder-scoped** policy — a row is visible if `env_id` matches
+  table uses a **holder-scoped** policy - a row is visible if `env_id` matches
   AND the caller is either (a) the patient themselves
   (`subject_id = current_user`), (b) a practitioner with a valid consent, or
   (c) a platform/env admin. The consent check is materialized into a
@@ -470,14 +470,14 @@ Sentin8 granular scopes at the BFF/authorization layer:
 | `patient/*.read` | `health8:fhir:patient:read` (wildcard expands to the patient-data read set) |
 | `user/*.write` | `health8:fhir:write` (user-level write) |
 | `system/*.read` | `health8:fhir:system:read` (system-level read) |
-| `launch/patient` | launch context (not a scope — a launch parameter) |
+| `launch/patient` | launch context (not a scope - a launch parameter) |
 | `openid` / `fhirUser` | Sentin8:Auth `openid` / `profile` |
 
 ### 7.2 Standard authorization pipeline
 
 Every Health8 service follows the standard 8-step pipeline (principles §5):
 extract bearer → verify → resolve tenant → feature gate → **authorize via
-Sentin8:Policy (Shield — RBAC + ABAC + ReBAC)** → set RLS context → execute →
+Sentin8:Policy (Shield - RBAC + ABAC + ReBAC)** → set RLS context → execute →
 emit audit. The JWT `scope` claim is a coarse pre-filter + RLS context feed;
 the Shield engine is the decision (policy design §4.3).
 
@@ -488,7 +488,7 @@ business-logic afterthought:
 
 - A `health8:consent:granted` event recomputes `health8.consent_grants`
   (materialized `(env_id, patient_id, grantee_id, scope, purpose)` rows).
-- Shield policies reference the consent grant relation (ReBAC) — a practitioner
+- Shield policies reference the consent grant relation (ReBAC) - a practitioner
   can read a patient's data only if a consent-grant relation tuple exists.
 - Holder-scoped RLS is the backstop: even if Shield mis-evaluates, the row is
   invisible without a matching grant.
@@ -513,10 +513,10 @@ business-logic afterthought:
 
 Two Health8 needs are **generic platform capabilities**, not clinical logic:
 
-1. **Sentin8:TLS raw-TCP listener support** (platform) — for HL7 v2 MLLP
+1. **Sentin8:TLS raw-TCP listener support** (platform) - for HL7 v2 MLLP
    (minimal lower-layer protocol) over TLS. Same generic capability Email8
    already requested for SMTP/IMAP STARTTLS. No clinical knowledge.
-2. **Sentin8:Storage `HEAD`/dedup fast path** (platform) — for Binary
+2. **Sentin8:Storage `HEAD`/dedup fast path** (platform) - for Binary
    resources and bulk-export artifacts (content-addressed dedup). Same
    generic capability Email8 requested.
 

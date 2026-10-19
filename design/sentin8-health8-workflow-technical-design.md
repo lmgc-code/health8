@@ -1,4 +1,4 @@
-# Sentin8 Health8:Workflow — Clinical Workflow Service Technical Design
+# Sentin8 Health8:Workflow - Clinical Workflow Service Technical Design
 
 Last updated: 2026-09-09
 Status: Target-state design (pre-implementation)
@@ -14,7 +14,7 @@ Owners: Sentin8 Platform Engineering, Health8 Product Engineering
 Health8:Workflow owns the **clinical task and order** domain: `Task`,
 `CarePlan`, `ServiceRequest`, `Appointment`/`Schedule`/`Slot`, and order
 orchestration. It delegates scheduling to Sentin8:Cron and multi-step
-orchestration to Sentin8:Flow — it does not run its own scheduler or embed a
+orchestration to Sentin8:Flow - it does not run its own scheduler or embed a
 saga engine.
 
 ## 2. Domain Model
