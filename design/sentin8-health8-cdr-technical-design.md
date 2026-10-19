@@ -283,7 +283,7 @@ still justified"), not a new trigger surface.
 
 ## 5. Authorization
 
-- **Step 5 gate**: `verify_token` (steps 1–4) then
+- **Step 5 gate**: `verify_token` (steps 1-4) then
   `crate::policy::require(&state.policy, &auth, &headers, EvalTarget::new("health8:cdr:<resource>:<action>"))`.
 - **Consent**: subject-compartment reads require a consent-grant relation
   tuple (ReBAC) evaluated by Shield; holder-scoped RLS is the backstop.
