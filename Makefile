@@ -20,4 +20,5 @@ help: ## Show this help
 lint: ## static checks — the design corpus is present
 	@test -d design || { echo "ERROR: design/ missing" >&2; exit 1; }
 
-clean: ## docs-only — nothing to clean
+clean: ## remove .run .run/logs .tmp (docs-only vertical — no build artifacts)
+	@rm -rf .run .run/logs .tmp
