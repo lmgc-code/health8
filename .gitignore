@@ -70,3 +70,5 @@ dist
 tmp
 out-tsc
 bazel-out
+# Local org-repo clone (never commit)
+/.github/
